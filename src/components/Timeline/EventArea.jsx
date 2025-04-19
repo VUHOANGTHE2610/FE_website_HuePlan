@@ -1,38 +1,37 @@
-// src/components/Timeline/EventArea.jsx
 import React from 'react';
-import EventBox from './EventBox'; // ✨ Thêm dòng import này
+import EventBox from './EventBox';
 
-const EventArea = ({ events, onMoForm }) => {
-  const danhSachGio = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+// Component hiển thị khu vực các sự kiện theo giờ
+const EventArea = ({ events, onSetTime }) => {
+  // Tạo danh sách các mốc giờ từ 0:00 đến 23:00
+  const hours = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
 
-  const moFormVoiGio = (chiSoGio) => {
-    const gioBatDau = danhSachGio[chiSoGio];
-    const gioKetThuc = danhSachGio[chiSoGio + 1] || '23:59';
-
-    onMoForm({
-      title: '',
-      start: gioBatDau,
-      end: gioKetThuc,
-      place: '',
-      address: '',
-      note: '',
-    });
+  // Hàm gửi thời gian lên TimelineView
+  const setTime = (hourIndex) => {
+    const startTime = hours[hourIndex];
+    const endTime = hours[hourIndex + 1] || '23:59';
+    onSetTime(startTime, endTime);
   };
 
   return (
     <div className="flex-1 relative">
-      {danhSachGio.map((gio, chiSo) => {
-        const suKien = events.find((sk) => sk.start === gio);
+      {hours.map((hour, index) => {
+        // Tìm sự kiện bắt đầu tại giờ này
+        const event = events.find((e) => e.start === hour);
 
         return (
           <div
-            key={chiSo}
+            key={index}
             className="relative h-[80px] border-b border-gray-200 cursor-pointer 
                        hover:bg-purple-50 hover:ring-2 hover:ring-purple-300 transition-all duration-200"
-            onClick={() => moFormVoiGio(chiSo)}
+            onClick={() => setTime(index)}
           >
-            {suKien && (
-              <EventBox suKien={suKien} onClick={() => onMoForm(suKien)} />
+            {/* Hiển thị EventBox nếu có sự kiện */}
+            {event && (
+              <EventBox
+                event={event}
+                onClick={() => setTime(index)} // Khi nhấn vào sự kiện, cũng cập nhật thời gian
+              />
             )}
           </div>
         );

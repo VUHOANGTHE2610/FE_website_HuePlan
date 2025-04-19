@@ -1,28 +1,76 @@
-import React from 'react';
-import TimeColumn from './TimeColumn';           // Cột giờ hiển thị từ 0h đến 23h
-import EventArea from './EventArea';            // Khu vực để hiển thị và thêm sự kiện
-import EventForm from './EventForm';            // Form để thêm/sửa sự kiện
-import DiaDiemDeXuat from './SuggestedPlaces';  // Gợi ý địa điểm phía dưới form
+import React, { useState } from 'react';
+import TimeColumn from './TimeColumn';
+import EventArea from './EventArea';
+import SuggestedPlaces from './SuggestedPlaces';
+import EventForm from './EventForm';
 
-const TimelineView = ({ events, onUpdateEvent, duLieuForm, onMoForm, onLuuSuKien }) => {
+// Component hiển thị timeline của một ngày
+const TimelineView = ({ events, setEvents }) => {
+  // Trạng thái lưu dữ liệu form
+  const [formData, setFormData] = useState({
+    title: '',
+    start: '',
+    end: '',
+    place: '',
+    address: '',
+    note: '',
+  });
+
+  // Hàm cập nhật thời gian vào form
+  const handleSetTime = (start, end) => {
+    setFormData((prev) => ({
+      ...prev,
+      start,
+      end,
+    }));
+  };
+
+  // Hàm cập nhật địa điểm vào form
+  const handleSetPlace = (place, address) => {
+    setFormData((prev) => ({
+      ...prev,
+      place,
+      address,
+      title: prev.title || place, // Nếu chưa có tiêu đề, dùng tên địa điểm
+    }));
+  };
+
+  // Hàm lưu sự kiện
+  const handleSaveEvent = (newEvent) => {
+    setEvents([...events, newEvent]);
+    // Reset form sau khi lưu
+    setFormData({
+      title: '',
+      start: '',
+      end: '',
+      place: '',
+      address: '',
+      note: '',
+    });
+    alert('Sự kiện đã được lưu!');
+  };
+
   return (
-    <div className="flex h-full border border-purple-300 rounded overflow-hidden">
-      {/* Bên trái: cột thời gian và sự kiện */}
-      <div className="w-2/4 flex border-r border-purple-300">
+    <div className="flex flex-col md:flex-row h-full border border-purple-300 rounded overflow-hidden">
+      {/* Cột bên trái: cột giờ và khu vực sự kiện */}
+      <div className="w-full md:w-2/4 flex flex-col md:flex-row border-b md:border-r border-purple-300">
         <TimeColumn />
-        <EventArea events={events} onUpdateEvent={onUpdateEvent} onMoForm={onMoForm} />
+        <EventArea events={events} onSetTime={handleSetTime} />
       </div>
 
-      {/* Bên phải: Form thêm sự kiện và gợi ý địa điểm */}
-      <div className="w-2/4 flex flex-col">
-        {/* Form thêm sự kiện chiếm 2/5 chiều cao */}
-        <div className="p-4 border-b border-purple-300 h-[30%]">
-          <EventForm duLieuBanDau={duLieuForm} onLuu={onLuuSuKien} />
+      {/* Cột bên phải: form và gợi ý địa điểm */}
+      <div className="w-full md:w-2/4 flex flex-col">
+        {/* Form thêm sự kiện */}
+        <div className="p-4 border-b border-purple-300 h-auto md:h-[22%]">
+          <EventForm
+            initialData={formData}
+            onSave={handleSaveEvent}
+            setFormData={setFormData} // Truyền hàm để EventForm có thể cập nhật formData
+          />
         </div>
-
-        {/* Gợi ý địa điểm chiếm 3/5 chiều cao */}
+        {/* Gợi ý địa điểm - chỉ render một lần */}
         <div className="p-4 overflow-y-auto flex-1">
-          <DiaDiemDeXuat />
+          <SuggestedPlaces onSelectPlace={handleSetPlace} />
         </div>
       </div>
     </div>
