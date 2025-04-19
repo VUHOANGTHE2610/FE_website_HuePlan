@@ -16,7 +16,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
           {/* Logo và mô tả */}
           <div>
-            <img src="/images/logo-white.png" alt="HuePlan" className="w-32 mb-4" />
+            <img src="/images/logo_v2.png" alt="HuePlan" className="w-32 mb-4" />
             <p>HuePlan – Nền tảng lên kế hoạch du lịch tự túc tại Huế dễ dàng và nhanh chóng.</p>
           </div>
 

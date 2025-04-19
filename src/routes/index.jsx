@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
-import TripPlan from "../pages/Trip_Calendar";
+import Timeline from "../pages/Timeline";
 
 const AppRoutes = () => {
   return (
@@ -11,7 +11,7 @@ const AppRoutes = () => {
       <Route path="home" element={<Home/>}/>
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
-      <Route path="/calendar" element={<TripPlan/>} />
+      <Route path="/timeline" element={<Timeline/>}/>
     </Routes>
   );
 };
