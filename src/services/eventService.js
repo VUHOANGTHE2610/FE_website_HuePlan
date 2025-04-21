@@ -1,3 +1,4 @@
+import api from "./api";
 /**
  * Service để gọi API liên quan đến sự kiện
  * Các hàm này sẽ được dùng trong TimelineTabs để tương tác với backend
@@ -39,5 +40,36 @@ export const getEvents = async () => {
       return await response.json();
     } catch (error) {
       throw new Error(error.message);
+    }
+  };
+    
+
+  export const registerUser = async (userData) => {
+    try {
+      const response = await api.post("/api/auth/register", userData);
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Đăng ký thất bại";
+      const errorDetails = error.response?.data?.data
+        ? Object.entries(error.response.data.data)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join("; ")
+        : null;
+      throw new Error(errorDetails || errorMessage);
+    }
+  };
+
+  export const loginUser = async (loginData) => {
+    try {
+      const response = await api.post("/api/auth/login", loginData);
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Đăng nhập thất bại";
+      const errorDetails = error.response?.data?.data
+        ? Object.entries(error.response.data.data)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join("; ")
+        : null;
+      throw new Error(errorDetails || errorMessage);
     }
   };

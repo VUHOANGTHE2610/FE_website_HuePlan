@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Common/Header';
+
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -32,7 +32,6 @@ const Profile = () => {
 
   return (
     <div>
-      <Header />
       <div className="p-4 max-w-screen-lg mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-purple-700">Thông tin cá nhân</h1>
         <form onSubmit={handleUpdate} className="max-w-md">

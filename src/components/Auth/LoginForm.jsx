@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { loginUser } from "../../services/eventService";
 
 const LoginForm = () => {
   const [useAcount, setUseAcount] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,14 +17,28 @@ const LoginForm = () => {
 
     try {
       if (!useAcount || !password) {
-        throw new Error("Vui lòng nhập đầy đủ useAcount và mật khẩu");
+        throw new Error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
       }
 
-      // TODO: Gọi API đăng nhập nếu có backend
+      const loginData = {
+        userEmail: useAcount, // Giả sử useAcount là email
+        userPassword: password,
+      };
 
+      const response = await loginUser(loginData);
       setIsLoading(false);
+
+      // Giả sử response trả về role của người dùng
+      const userRole = response.role || "client"; // Nếu backend trả về role
+      toast.success("Đăng nhập thành công!");
+
+      // Điều hướng dựa trên role
+      if (userRole === "client") {
+        navigate("/home");
+      } 
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
       setIsLoading(false);
     }
   };
@@ -33,12 +50,10 @@ const LoginForm = () => {
         backgroundImage: "linear-gradient(rgba(75, 0, 130, 0.5), rgba(138, 43, 226, 0.5)), url('/images/kinh-thanh-hue.jpg')",
       }}
     >
-      {/* Tên trang web */}
       <div className="absolute top-10 text-white text-7xl font-extrabold tracking-widest drop-shadow-lg text-center animate-fadeIn">
         HuePlan
       </div>
 
-      {/* Form đăng nhập */}
       <div className="relative w-full max-w-md bg-white bg-opacity-90 p-8 rounded-lg shadow-2xl drop-shadow-xl z-10">
         <h2 className="text-2xl font-bold text-center text-purple-700">Đăng Nhập</h2>
 
@@ -46,11 +61,11 @@ const LoginForm = () => {
           {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
 
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-1">Tên đăng nhập</label>
+            <label className="block text-gray-700 font-medium mb-1">Email</label>
             <input
-              type="useAcount"
+              type="email"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Nhập tên đăng nhập của bạn"
+              placeholder="Nhập email của bạn"
               value={useAcount}
               onChange={(e) => setUseAcount(e.target.value)}
               required
@@ -78,7 +93,6 @@ const LoginForm = () => {
           </button>
         </form>
 
-        {/* Chuyển sang trang Đăng ký */}
         <p className="mt-4 text-center text-gray-600">
           Chưa có tài khoản?{" "}
           <Link to="/register" className="text-purple-600 font-medium hover:underline">

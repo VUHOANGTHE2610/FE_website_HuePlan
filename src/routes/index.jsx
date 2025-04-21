@@ -4,6 +4,7 @@ import Register from "../pages/Register";
 import Home from "../pages/Home";
 import TimelineDetail from "../pages/TimelineDetail";
 import UserProfile from "../pages/UserProfile"
+import TimelineList from "../pages/TimelineList";
 
 const AppRoutes = () => {
   return (
