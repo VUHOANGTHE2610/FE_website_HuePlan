@@ -1,75 +1,129 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import { getUser, updateUser } from '../../services/eventService';
+import { toast } from 'react-toastify';
 
-
-const Profile = () => {
+const ProfileUser = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    user_Name: '',
-    user_Email: '',
+  const { user, logout } = useContext(AuthContext);
+  const [profile, setProfile] = useState({
+    userName: '',
+    userEmail: '',
+    role: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Giả lập dữ liệu, sau này sẽ gọi API GET /api/users/{user_id}
   useEffect(() => {
-    const mockUser = {
-      user_Name: 'Nguyen Van A',
-      user_Email: 'nguyenvana@example.com',
-    };
-    setUser(mockUser);
-  }, []);
+    if (user && user.userId) {
+      const fetchUser = async () => {
+        setIsLoading(true);
+        try {
+          const response = await getUser(user.userId);
+          setProfile({
+            userName: response.user_Name,
+            userEmail: response.user_Email,
+            role: response.role,
+          });
+        } catch (error) {
+          setError('Không thể tải thông tin người dùng.');
+          setProfile({
+            userName: user.userName,
+            userEmail: user.userEmail,
+            role: user.role,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchUser();
+    }
+  }, [user]);
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    // Sau này sẽ gọi API PUT /api/users/{user_id}
-    console.log('Cập nhật thông tin:', user);
-    alert('Cập nhật thành công!');
+    setError('');
+    setIsLoading(true);
+    try {
+      await updateUser({
+        user_ID: user.userId,
+        user_Name: profile.userName,
+        user_Email: profile.userEmail,
+        role: profile.role,
+      });
+      toast.success('Cập nhật thông tin thành công!');
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
-    // Sau này sẽ gọi API POST /api/auth/logout
-    navigate('/login');
+    logout();
+    navigate('/homedefault');
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       <div className="p-4 max-w-screen-lg mx-auto">
         <h1 className="text-2xl font-bold mb-4 text-purple-700">Thông tin cá nhân</h1>
-        <form onSubmit={handleUpdate} className="max-w-md">
-          <div className="mb-4">
-            <label className="block mb-1">Tên</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={user.user_Name}
-              onChange={(e) => setUser({ ...user, user_Name: e.target.value })}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block mb-1">Email</label>
-            <input
-              type="email"
-              className="w-full border rounded px-3 py-2"
-              value={user.user_Email}
-              onChange={(e) => setUser({ ...user, user_Email: e.target.value })}
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-          >
-            Cập nhật
-          </button>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="ml-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Đăng xuất
-          </button>
-        </form>
+        {error && <div className="mb-4 text-red-500">{error}</div>}
+        {isLoading ? (
+          <div>Đang tải...</div>
+        ) : (
+          <form onSubmit={handleUpdate} className="max-w-md">
+            <div className="mb-4">
+              <label className="block mb-1 text-gray-700">Tên</label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={profile.userName}
+                onChange={(e) => setProfile({ ...profile, userName: e.target.value })}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1 text-gray-700">Email</label>
+              <input
+                type="email"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={profile.userEmail}
+                onChange={(e) => setProfile({ ...profile, userEmail: e.target.value })}
+                disabled={isLoading}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1 text-gray-700">Vai trò</label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={profile.role}
+                disabled
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Đang cập nhật...' : 'Cập nhật'}
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="ml-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Đăng xuất
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
 };
 
-export default Profile;
+export default ProfileUser;

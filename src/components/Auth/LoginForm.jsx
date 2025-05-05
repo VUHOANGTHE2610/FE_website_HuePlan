@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../../services/eventService";
+import { AuthContext } from "../../context/AuthContext";
 
 const LoginForm = () => {
   const [useAcount, setUseAcount] = useState("");
@@ -9,6 +10,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,21 +23,35 @@ const LoginForm = () => {
       }
 
       const loginData = {
-        userEmail: useAcount, // Giả sử useAcount là email
+        userEmail: useAcount,
         userPassword: password,
       };
 
       const response = await loginUser(loginData);
       setIsLoading(false);
 
-      // Giả sử response trả về role của người dùng
-      const userRole = response.role || "client"; // Nếu backend trả về role
+           // Lưu thông tin cần thiết vào localStorage
+           const userData = {
+            userId: response.userId,
+            userName: response.userName || "Người dùng",
+            userEmail: response.userEmail || useAcount,
+            token: response.token,
+            role: response.role,
+          };
+          localStorage.setItem("user", JSON.stringify(userData));
+    
+          // Cập nhật AuthContext
+          login(userData);
+
       toast.success("Đăng nhập thành công!");
 
-      // Điều hướng dựa trên role
-      if (userRole === "client") {
-        navigate("/home");
-      } 
+      // 👉 Điều hướng theo vai trò
+      if (response.role === "business") {
+        navigate("/BusinessHome");
+      } else if(response.role === "client"){
+        navigate("/UserHome");
+      }
+
     } catch (err) {
       setError(err.message);
       toast.error(err.message);
@@ -47,7 +63,8 @@ const LoginForm = () => {
     <div
       className="relative flex min-h-screen items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage: "linear-gradient(rgba(75, 0, 130, 0.5), rgba(138, 43, 226, 0.5)), url('/images/kinh-thanh-hue.jpg')",
+        backgroundImage:
+          "linear-gradient(rgba(75, 0, 130, 0.5), rgba(138, 43, 226, 0.5)), url('/images/kinh-thanh-hue.jpg')",
       }}
     >
       <div className="absolute top-10 text-white text-7xl font-extrabold tracking-widest drop-shadow-lg text-center animate-fadeIn">
@@ -55,7 +72,9 @@ const LoginForm = () => {
       </div>
 
       <div className="relative w-full max-w-md bg-white bg-opacity-90 p-8 rounded-lg shadow-2xl drop-shadow-xl z-10">
-        <h2 className="text-2xl font-bold text-center text-purple-700">Đăng Nhập</h2>
+        <h2 className="text-2xl font-bold text-center text-purple-700">
+          Đăng Nhập
+        </h2>
 
         <form onSubmit={handleLogin} className="mt-4">
           {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
@@ -95,7 +114,10 @@ const LoginForm = () => {
 
         <p className="mt-4 text-center text-gray-600">
           Chưa có tài khoản?{" "}
-          <Link to="/register" className="text-purple-600 font-medium hover:underline">
+          <Link
+            to="/register"
+            className="text-purple-600 font-medium hover:underline"
+          >
             Đăng ký ngay
           </Link>
         </p>

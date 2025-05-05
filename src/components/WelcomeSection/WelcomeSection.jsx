@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 // Mảng chứa các ảnh nền
 const images = [
-  "/images/AnhToanCucKinhThanh.jpg",
+  "/images/kinh-thanh-hue_1920-1080.jpg",
 ];
 
 const BackgroundSlider = () => {

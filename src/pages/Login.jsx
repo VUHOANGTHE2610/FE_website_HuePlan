@@ -5,7 +5,6 @@ const Login = () =>{
         <div>
             <LoginForm/>
         </div>
-      
     );
 }
-export default Login
+export default Login    

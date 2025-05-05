@@ -1,6 +1,7 @@
 import TimelineTabs from '../components/Timeline/TimelineTabs';
 import Header from '../components/Common/Header'
 
+
 const TimelineDetail = () =>{
     return(
         <div className="p-4 max-w-screen-lg mx-auto">

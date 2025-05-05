@@ -17,6 +17,7 @@
     "@fullcalendar/timegrid": "^6.1.17",
     "@tailwindcss/vite": "^4.0.15",
     "axios": "^1.8.4",
+    "lucide-react": "^0.503.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-draggable": "^4.4.6",

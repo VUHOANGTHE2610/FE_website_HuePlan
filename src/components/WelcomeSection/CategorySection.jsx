@@ -4,22 +4,22 @@ import React from "react";
 const categories = [
   {
     name: "Lăng tẩm",
-    image: "/images/lang-tam.jpg",
+    image: "/images/LangKhaiDinh.jpg",
     description: "Khám phá những công trình kiến trúc cổ kính độc đáo.",
   },
   {
     name: "Ẩm thực",
-    image: "/images/am-thuc.jpg",
+    image: "/images/bunBo.jpg",
     description: "Trải nghiệm hương vị đặc sản Huế tinh tế và đậm đà.",
   },
   {
     name: "Văn hóa",
-    image: "/images/van-hoa.jpg",
+    image: "/images/Ao-dai-Nhat-Binh.jpg",
     description: "Tìm hiểu lễ hội, trang phục, di sản và lịch sử Huế.",
   },
   {
     name: "Cà phê",
-    image: "/images/ca-phe.jpg",
+    image: "/images/cafe-muoi.jpg",
     description: "Những quán cà phê view đẹp, chill giữa lòng Cố đô.",
   },
   {
