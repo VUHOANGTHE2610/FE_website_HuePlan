@@ -14,9 +14,9 @@ const AppRoutes = () => {
     <Routes>
       {/** Không cần đăng Nhập **/}
       <Route path="/" element={<Navigate to="/homedefault" replace/>} />
-      <Route path="homedefault" element={<Home/>}/>
-      <Route path="login" element={<Login/>} />
-      <Route path="register" element={<Register />} />
+      <Route path="/homedefault" element={<Home/>}/>
+      <Route path="/login" element={<Login/>} />
+      <Route path="/register" element={<Register />} />
       <Route path="/blogfeed" element={<BlogFeedPage />} />
         
       {/* Client */}

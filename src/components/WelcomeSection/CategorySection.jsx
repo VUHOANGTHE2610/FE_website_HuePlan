@@ -22,48 +22,46 @@ const categories = [
     image: "/images/cafe-muoi.jpg",
     description: "Những quán cà phê view đẹp, chill giữa lòng Cố đô.",
   },
-  {
-    name: "Lịch trình đề xuất",
-    image: "/images/lich-trinh.jpg",
-    description: "Xem gợi ý lịch trình phù hợp với thời gian của bạn.",
-  },
 ];
 
 const CategorySection = () => {
   return (
     <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-purple-50 to-white">
-      <h2 className="text-4xl font-bold text-center text-purple-700 mb-12">
-        Danh mục khám phá nổi bật
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {categories.map((cat, index) => (
-          <div
-            key={index}
-            className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-          >
-            <img
-              src={cat.image}
-              alt={cat.name}
-              className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-purple-700 mb-1 text-center">
+    <h2 className="text-4xl font-bold text-center text-purple-700 mb-12">
+      Danh mục khám phá nổi bật
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      {categories.map((cat, index) => (
+        <div
+          key={index}
+          className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+        >
+          <img
+            src={cat.image}
+            alt={cat.name}
+            className="w-full aspect-video object-cover transform group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-purple-700 mb-2 text-center">
                 {cat.name}
               </h3>
               <p className="text-sm text-gray-600 text-center">{cat.description}</p>
             </div>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="mt-4 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <a
-                href="#"
-                className="px-4 py-1 text-sm bg-purple-600 text-white rounded-full shadow hover:bg-purple-700"
+                href="/register"
+                className="inline-block px-4 py-2 text-sm bg-purple-600 text-white rounded-full shadow hover:bg-purple-700 transition"
               >
-                Khám phá
+                Lên kế hoạch ngay
               </a>
             </div>
           </div>
-        ))}
-      </div>
-    </section>
+        </div>
+      ))}
+    </div>
+  </section>
+  
   );
 };
 
