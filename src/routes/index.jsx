@@ -8,6 +8,8 @@ import TimelineList from "../pages/TimelineList";
 import UserHome from "../pages/UserHome";
 import BusinessHomePage from "../pages/BusinessHome";
 import BlogFeedPage from "../pages/BlogFeedPage";
+import AdminPage from "../pages/AdminPage";
+
 
 const AppRoutes = () => {
   return (
@@ -23,11 +25,16 @@ const AppRoutes = () => {
       <Route path="/profile-user" element={<UserProfile />} />
       <Route path="/UserHome" element={<UserHome/>}/>
       <Route path="/timeline"element={<TimelineList/>} />
-      <Route path="/t" element={<TimelineDetail/>}/>
+      <Route path="/timelines/:timelineId" element={<TimelineDetail/>}/>
 
 
       {/*Business */}
       <Route path="/BusinessHome" element={<BusinessHomePage/>}/>
+
+      {/*Admin*/}
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/admin/businessManeger" element={<businessManager />} />
+      
       {/* Chuyển hướng mặc định nếu không khớp route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

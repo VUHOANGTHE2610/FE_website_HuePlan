@@ -49,7 +49,9 @@ const LoginForm = () => {
       if (response.role === "business") {
         navigate("/BusinessHome");
       } else if(response.role === "client"){
-        navigate("/UserHome");
+        navigate("/blogfeed");
+      } else if(response.role === "admin"){
+        navigate("/admin")
       }
 
     } catch (err) {

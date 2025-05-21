@@ -28,7 +28,7 @@ const ProfileUser = () => {
             role: response.role,
           });
         } catch (error) {
-          setError('Không thể tải thông tin người dùng.');
+          setError('Không thể tải thông tin người dùng.' + error.message);
           setProfile({
             userName: user.userName,
             userEmail: user.userEmail,

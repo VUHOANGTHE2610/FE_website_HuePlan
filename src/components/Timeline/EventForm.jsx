@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { addDayItem, addTimeLineDay } from '../../services/eventService';
+import { useParams } from 'react-router-dom';
 
-// Component form để thêm sự kiện
-const EventForm = ({ initialData, onSave, setFormData }) => {
-  // Trạng thái cho các trường của form
+const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [place, setPlace] = useState('');
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Cập nhật form khi initialData thay đổi
+  const { timelineId } = useParams();
+
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || '');
@@ -22,31 +25,80 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
     }
   }, [initialData]);
 
-  // Hàm xử lý submit form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validation cơ bản
+
     if (!title) {
-      alert('Vui lòng nhập tiêu đề!');
+      setError('Vui lòng nhập tiêu đề!');
       return;
     }
     if (!startTime || !endTime) {
-      alert('Vui lòng chọn thời gian!');
+      setError('Vui lòng chọn thời gian!');
       return;
     }
-    // Tạo object sự kiện mới
-    const newEvent = {
-      title,
-      start: startTime,
-      end: endTime,
-      place,
-      address,
-      note,
-    };
-    onSave(newEvent);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      let currentDayId = dayId;
+
+      if (!currentDayId) {
+        const newDay = await addTimeLineDay({
+          timeLine_ID: timelineId,
+          day_date: new Date().toISOString().split('T')[0],
+        });
+        currentDayId = newDay.day_ID;
+        if (!currentDayId) throw new Error('Không thể tạo ngày mới!');
+      }
+
+      const dayItemData = {
+        day_ID: currentDayId,
+        item_title: title,
+        start_time: startTime + ':00',
+        end_time: endTime + ':00',
+        location: address || place || '',
+        cost: 0,
+        note: note || '',
+      };
+
+      const savedItem = await addDayItem(dayItemData);
+      const newEvent = {
+        item_ID: savedItem.item_ID,
+        title: savedItem.item_title,
+        start: savedItem.start_time ? savedItem.start_time.slice(0, 5) : '00:00',
+        end: savedItem.end_time ? savedItem.end_time.slice(0, 5) : '00:00',
+        place: savedItem.location,
+        address: savedItem.location,
+        note: savedItem.note,
+        day_ID: currentDayId,
+      };
+
+      onSave(newEvent, currentDayId);
+      alert('Thêm sự kiện thành công!');
+
+      setTitle('');
+      setStartTime('');
+      setEndTime('');
+      setPlace('');
+      setAddress('');
+      setNote('');
+      setFormData({
+        title: '',
+        start: '',
+        end: '',
+        place: '',
+        address: '',
+        note: '',
+      });
+    } catch (err) {
+      setError(err.message || 'Lưu sự kiện thất bại!');
+      console.error('Lỗi khi lưu sự kiện:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Hàm cập nhật formData khi người dùng nhập
   const updateFormData = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -57,7 +109,7 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <h2 className="text-md font-bold text-purple-700 mb-2">📅 Thêm sự kiện</h2>
-      {/* Trường tiêu đề */}
+      {error && <div className="text-red-600 mb-2">{error}</div>}
       <div className="mb-2">
         <label className="block text-xs font-medium mb-1">Tiêu đề</label>
         <input
@@ -67,10 +119,9 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
             setTitle(e.target.value);
             updateFormData('title', e.target.value);
           }}
+          disabled={loading}
         />
       </div>
-
-      {/* Trường thời gian */}
       <div className="flex gap-2 mb-2">
         <div className="flex-1">
           <label className="block text-xs font-medium mb-1">Bắt đầu</label>
@@ -82,6 +133,7 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
               setStartTime(e.target.value);
               updateFormData('start', e.target.value);
             }}
+            disabled={loading}
           />
         </div>
         <div className="flex-1">
@@ -94,11 +146,10 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
               setEndTime(e.target.value);
               updateFormData('end', e.target.value);
             }}
+            disabled={loading}
           />
         </div>
       </div>
-
-      {/* Trường địa điểm */}
       <div className="mb-2">
         <label className="block text-xs font-medium mb-1">Địa điểm</label>
         <input
@@ -108,10 +159,9 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
             setPlace(e.target.value);
             updateFormData('place', e.target.value);
           }}
+          disabled={loading}
         />
       </div>
-
-      {/* Trường địa chỉ */}
       <div className="mb-2">
         <label className="block text-xs font-medium mb-1">Địa chỉ</label>
         <input
@@ -121,10 +171,9 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
             setAddress(e.target.value);
             updateFormData('address', e.target.value);
           }}
+          disabled={loading}
         />
       </div>
-
-      {/* Trường ghi chú */}
       <div className="mb-2">
         <label className="block text-xs font-medium mb-1">Ghi chú</label>
         <textarea
@@ -135,16 +184,16 @@ const EventForm = ({ initialData, onSave, setFormData }) => {
             updateFormData('note', e.target.value);
           }}
           rows={2}
+          disabled={loading}
         />
       </div>
-
-      {/* Nút lưu */}
       <div className="text-right">
         <button
           type="submit"
           className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
+          disabled={loading}
         >
-          Lưu
+          {loading ? 'Đang lưu...' : 'Lưu'}
         </button>
       </div>
     </form>

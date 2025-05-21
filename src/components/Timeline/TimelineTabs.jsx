@@ -1,52 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TimelineView from './TimelineView';
 import XacNhanXoaModal from './XacNhanXoaModal';
+import { getTimeLineDaysByTimeLineId, deleteTimeLineDay, addTimeLineDay } from '../../services/eventService';
 
-// Component chính quản lý các tab ngày và sự kiện
-const TimelineTabs = () => {
-  // Trạng thái lưu danh sách sự kiện theo ngày
-  const [eventsByDay, setEventsByDay] = useState([[], [], []]);
-  // Trạng thái lưu index của ngày đang chọn
+const TimelineTabs = ({ timelineId }) => {
+  const [eventsByDay, setEventsByDay] = useState([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  // Trạng thái kiểm soát hiển thị modal xác nhận xóa ngày
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // Trạng thái lưu index của ngày cần xóa
   const [deleteIndex, setDeleteIndex] = useState(null);
-  // Trạng thái loading khi xử lý thêm/xóa
   const [isLoading, setIsLoading] = useState(false);
-  // Trạng thái lỗi khi xử lý
   const [error, setError] = useState(null);
 
-  // Hàm xử lý xóa một ngày
-  const handleDeleteDay = (index) => {
-    console.log('Xóa ngày tại index:', index); // Debug: kiểm tra index
-    console.log('Trước khi xóa, eventsByDay:', eventsByDay); // Debug: kiểm tra state
+  useEffect(() => {
+    if (!timelineId) return;
+    setIsLoading(true);
+    setError(null);
+    getTimeLineDaysByTimeLineId(timelineId)
+      .then((days) => {
+        console.log('Dữ liệu API:', days); // Debug: Kiểm tra dữ liệu API
+        const mapped = Array.isArray(days)
+          ? days.map(day => ({
+              dayId: day.day_ID,
+              events: day.dayItemList
+                ? [...new Set(day.dayItemList
+                    .filter(item => item.item_title && item.start_time && item.end_time) // Lọc sự kiện hợp lệ
+                    .map(JSON.stringify))].map(JSON.parse) // Loại bỏ trùng lặp
+                    .map(item => ({
+                      item_ID: item.item_ID,
+                      title: item.item_title,
+                      start: item.start_time.slice(0, 5), // HH:mm
+                      end: item.end_time.slice(0, 5),     // HH:mm
+                      place: item.location,
+                      address: item.location,
+                      note: item.note,
+                      color: item.color || 'bg-purple-500', // Thêm màu mặc định
+                    }))
+                : [],
+            }))
+          : [{ dayId: null, events: [] }];
+        console.log('eventsByDay:', mapped); // Debug: Kiểm tra dữ liệu sau ánh xạ
+        setEventsByDay(mapped);
+        setSelectedDayIndex(0);
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải dữ liệu lịch trình:', err);
+        setError(err.message || 'Không thể tải dữ liệu lịch trình!');
+        setEventsByDay([{ dayId: null, events: [] }]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [timelineId]);
 
-    setIsLoading(true); // Bật trạng thái loading
-    setError(null); // Reset lỗi
+  useEffect(() => {
+    if (eventsByDay.length === 0) {
+      setEventsByDay([{ dayId: null, events: [] }]);
+    }
+  }, [eventsByDay]);
+
+  const handleDeleteDay = async (index) => {
+    console.log('Xóa ngày tại index:', index);
+    setIsLoading(true);
+    setError(null);
     try {
+      const dayToDelete = eventsByDay[index];
+      if (dayToDelete.dayId) {
+        await deleteTimeLineDay(dayToDelete.dayId);
+      }
       const updatedEvents = [...eventsByDay];
-      updatedEvents.splice(index, 1); // Xóa ngày tại index
+      updatedEvents.splice(index, 1);
       setEventsByDay(updatedEvents);
-      // Cập nhật ngày đang chọn
       setSelectedDayIndex((prev) =>
         prev === index ? Math.max(0, index - 1) : prev > index ? prev - 1 : prev
       );
-      console.log('Sau khi xóa, eventsByDay:', updatedEvents); // Debug: kiểm tra state sau khi xóa
       alert('Ngày đã bị xóa!');
     } catch (err) {
       setError('Không thể xóa ngày.');
-      console.error('Lỗi khi xóa ngày:', err); // Debug: ghi lại lỗi
+      console.error('Lỗi khi xóa ngày:', err);
     } finally {
-      setIsLoading(false); // Tắt trạng thái loading
+      setIsLoading(false);
       setShowDeleteModal(false);
       setDeleteIndex(null);
     }
   };
 
+  const handleUpdateDayId = (newDayId) => {
+    const updatedEvents = [...eventsByDay];
+    updatedEvents[selectedDayIndex].dayId = newDayId;
+    setEventsByDay(updatedEvents);
+  };
+
+  const currentDay = eventsByDay[selectedDayIndex] || { dayId: null, events: [] };
+
   return (
     <div className="w-full">
-      {/* Thanh tabs các ngày + nút thêm ngày */}
       <div className="flex items-center border-b mb-4 overflow-x-auto">
         {eventsByDay.map((_, index) => (
           <div key={index} className="relative group flex items-center min-w-[120px]">
@@ -60,11 +105,9 @@ const TimelineTabs = () => {
             >
               Ngày {index + 1}
             </button>
-            {/* Nút xóa ngày */}
             {eventsByDay.length > 1 && (
               <button
                 onClick={() => {
-                  console.log('Mở modal xóa ngày tại index:', index); // Debug: kiểm tra khi mở modal
                   setDeleteIndex(index);
                   setShowDeleteModal(true);
                 }}
@@ -76,11 +119,22 @@ const TimelineTabs = () => {
             )}
           </div>
         ))}
-        {/* Nút thêm ngày mới */}
         <button
-          onClick={() => {
-            setEventsByDay([...eventsByDay, []]);
-            setSelectedDayIndex(eventsByDay.length);
+          onClick={async () => {
+            setIsLoading(true);
+            try {
+              const newDay = await addTimeLineDay({
+                timeLine_ID: timelineId,
+                day_date: new Date().toISOString().split('T')[0],
+              });
+              setEventsByDay([...eventsByDay, { dayId: newDay.day_ID, events: [] }]);
+              setSelectedDayIndex(eventsByDay.length);
+            } catch (err) {
+              console.error('Lỗi khi thêm ngày mới:', err);
+              setError('Không thể thêm ngày mới!');
+            } finally {
+              setIsLoading(false);
+            }
           }}
           className="ml-2 px-3 text-lg text-purple-600 hover:text-purple-800 transition"
           title="Thêm ngày mới"
@@ -89,27 +143,25 @@ const TimelineTabs = () => {
         </button>
       </div>
 
-      {/* Hiển thị trạng thái loading */}
       {isLoading && <div className="text-center p-4">Đang xử lý...</div>}
-      {/* Hiển thị lỗi nếu có */}
       {error && <div className="text-red-600 p-4">{error}</div>}
 
-      {/* Component hiển thị timeline của ngày đang chọn */}
       <TimelineView
-        events={eventsByDay[selectedDayIndex]}
+        dayId={currentDay.dayId}
+        events={currentDay.events}
         setEvents={(newEvents) => {
           const updatedEvents = [...eventsByDay];
-          updatedEvents[selectedDayIndex] = newEvents;
+          updatedEvents[selectedDayIndex] = { ...updatedEvents[selectedDayIndex], events: newEvents };
           setEventsByDay(updatedEvents);
         }}
+        onUpdateDayId={handleUpdateDayId}
       />
-      {/* Modal xác nhận xóa ngày */}
+
       {deleteIndex !== null && (
         <XacNhanXoaModal
           show={showDeleteModal}
           dayName={`Ngày ${deleteIndex + 1}`}
           onClose={() => {
-            console.log('Đóng modal xóa'); // Debug: kiểm tra khi đóng modal
             setShowDeleteModal(false);
             setDeleteIndex(null);
           }}
