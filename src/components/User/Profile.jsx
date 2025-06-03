@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { getUser, updateUser } from '../../services/eventService';
+import { getUser, updateUser } from '../../services/UserService';
 import { toast } from 'react-toastify';
 
 const ProfileUser = () => {
@@ -11,7 +11,6 @@ const ProfileUser = () => {
   const [profile, setProfile] = useState({
     userName: '',
     userEmail: '',
-    role: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,14 +24,12 @@ const ProfileUser = () => {
           setProfile({
             userName: response.user_Name,
             userEmail: response.user_Email,
-            role: response.role,
           });
         } catch (error) {
           setError('Không thể tải thông tin người dùng.' + error.message);
           setProfile({
             userName: user.userName,
             userEmail: user.userEmail,
-            role: user.role,
           });
         } finally {
           setIsLoading(false);
@@ -51,7 +48,6 @@ const ProfileUser = () => {
         user_ID: user.userId,
         user_Name: profile.userName,
         user_Email: profile.userEmail,
-        role: profile.role,
       });
       toast.success('Cập nhật thông tin thành công!');
     } catch (error) {
@@ -96,15 +92,7 @@ const ProfileUser = () => {
                 disabled={isLoading}
               />
             </div>
-            <div className="mb-4">
-              <label className="block mb-1 text-gray-700">Vai trò</label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={profile.role}
-                disabled
-              />
-            </div>
+
             <button
               type="submit"
               className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 disabled:opacity-50"

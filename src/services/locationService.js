@@ -19,6 +19,7 @@ export const getAllLocations = async () => {
     throw new Error(error.response?.data?.message || "Lỗi khi lấy danh sách địa điểm");
   }
 };
+
 export const getLocationById = async (id) => {
   try {
     const response = await api.get(`/api/location/${id}`);
@@ -122,5 +123,22 @@ export const deletePhoto = async (photoId) => {
       } : "Không có response từ server",
     });
     throw new Error(error.response?.data?.message || "Lỗi khi xóa ảnh");
+  }
+};
+
+export const getLocationsByUserId = async (userId) => {
+  try {
+    const response = await api.get(`/api/location/getByID/${userId}`);
+    if (response.data.success) return response.data.data;
+    throw new Error(response.data.message || "Lỗi khi lấy danh sách địa điểm");
+  } catch (error) {
+    console.error("Lỗi khi gọi API getLocationsByUserId:", {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+      } : "Không có response từ server",
+    });
+    throw error;
   }
 };

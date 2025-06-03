@@ -9,7 +9,7 @@ const SidebarAdmin = ({ role }) => {
       {/* Mục chung cho tất cả roles */}
       <ul className="space-y-2">
         <li>
-          <Link to="/admin/overview" className="hover:text-yellow-300">
+          <Link to="/admin" className="hover:text-yellow-300">
             Tổng Quan
           </Link>
         </li>
@@ -17,7 +17,7 @@ const SidebarAdmin = ({ role }) => {
         {/* Mục chỉ dành cho admin */}
         {role === 'admin' && (
           <li>
-            <Link to="/admin/businessManager" className="hover:text-yellow-300">
+            <Link to="/admin/users" className="hover:text-yellow-300">
               Quản lý Người dùng 
             </Link>
           </li>
@@ -32,8 +32,8 @@ const SidebarAdmin = ({ role }) => {
               </Link>
             </li>
             <li>
-              <Link to="/admin/posts" className="hover:text-yellow-300">
-                Quản lý bài viết
+              <Link to="/admin/categories" className="hover:text-yellow-300">
+                Quản lý loại địa điểm
               </Link>
             </li>
           </>

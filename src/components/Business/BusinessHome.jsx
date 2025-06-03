@@ -1,54 +1,13 @@
-import React, { useState, useContext } from 'react';
-import BusinessSidebar from './BusinessSidebar'; 
-import TrangDoanhNghiep from './TrangDoanhNghiep';
-import QuanLyBlog from './QuanLyBlog';
-import ThongTinCaNhan from './ThongTinCaNhan';
-import { AuthContext } from '../../context/AuthContext';
-import XacNhanDangXuatModal from '../Common/XacNhanDangXuatModal';
+import React from 'react';
+import SidebarBusiness from './SidebarBusiness';
 
-const BusinessHome = () => {
-  const [tabDangChon, setTabDangChon] = useState('trang');
-  const [hienModalDangXuat, setHienModalDangXuat] = useState(false);
-  const { logout } = useContext(AuthContext);
-
-  const renderNoiDung = () => {
-    switch (tabDangChon) {
-      case 'trang':
-        return <TrangDoanhNghiep />;
-      case 'blog':
-        return <QuanLyBlog />;
-      case 'thongtin':
-        return <ThongTinCaNhan />;
-      default:
-        return null;
-    }
-  };
-
+const BusinessHome = ({ content }) => {
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-800">
-      {/* Sidebar */}
-      <BusinessSidebar
-        tabDangChon={tabDangChon}
-        chonTab={setTabDangChon}
-        onDangXuat={() => setHienModalDangXuat(true)}
-      />
-
-      {/* Nội dung */}
-      <div className="flex-1 p-6 bg-white shadow-inner">
-        {renderNoiDung()}
+    <div className="flex h-screen bg-gray-100">
+      <SidebarBusiness />
+      <div className="flex-1 overflow-auto">
+        {content}
       </div>
-
-      {/* Modal xác nhận đăng xuất */}
-      {hienModalDangXuat && (
-        <XacNhanDangXuatModal
-          hien={hienModalDangXuat}
-          onDong={() => setHienModalDangXuat(false)}
-          onXacNhan={() => {
-            logout();
-            window.location.href = "/homedefault";
-          }}
-        />
-      )}
     </div>
   );
 };

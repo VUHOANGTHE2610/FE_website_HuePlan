@@ -34,8 +34,7 @@ const Header = () => {
         <ul className="flex items-center space-x-6">
           {[
             { label: "Lịch trình", to: "/timeline" },
-            { label: "BlogFeed", to: "/blogfeed" }, 
-            { label: "Địa điểm HOT", to: "#" },
+            { label: "BlogFeed", to: "/blogfeed" },   
           ].map(({ label, to }) => (
             <li key={label}>
               <Link

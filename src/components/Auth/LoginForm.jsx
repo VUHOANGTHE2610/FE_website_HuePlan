@@ -45,7 +45,6 @@ const LoginForm = () => {
 
       toast.success("Đăng nhập thành công!");
 
-      // 👉 Điều hướng theo vai trò
       if (response.role === "business") {
         navigate("/BusinessHome");
       } else if(response.role === "client"){

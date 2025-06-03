@@ -30,30 +30,6 @@ export const loginUser = async (loginData) => {
   }
 };
 
-export const getUser = async (userId) => {
-  try {
-    const response = await api.get(`/api/users/${userId}`);
-    if (response.data.success) {
-      return response.data.data;
-    }
-    throw new Error(response.data.message || "Không thể lấy thông tin người dùng");
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Lỗi khi lấy thông tin người dùng");
-  }
-};
-
-export const updateUser = async (userData) => {
-  try {
-    const response = await api.put("/api/users/update", userData);
-    if (response.data.success) {
-      return response.data.data;
-    }
-    throw new Error(response.data.message || "Không thể cập nhật thông tin");
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Lỗi khi cập nhật thông tin");
-  }
-};
-
 export const getTimelinesByUserId = async (userId) => {
   const response = await api.get(`/api/client/timeLine/user/${userId}`);
   if (response.data.success) return response.data.data;

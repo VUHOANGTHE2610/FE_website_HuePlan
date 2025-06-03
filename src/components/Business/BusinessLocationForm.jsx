@@ -6,7 +6,7 @@ import { getAllCategories } from '../../services/categoryService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const LocationForm = () => {
+const BusinessLocationForm = () => {
   const { user } = useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,9 +19,9 @@ const LocationForm = () => {
     location_Photos: [],
     location_Cost: 0,
     location_Address: '',
-    createBy: 'Admin',
+    createBy: 'Business',
     user_ID: 0,
-    status: true,
+    status: false,
     category_ID: 0,
   });
   const [categories, setCategories] = useState([]);
@@ -46,7 +46,7 @@ const LocationForm = () => {
       setLocation(prev => ({
         ...prev,
         user_ID: user.userId || 0,
-        createBy: user.userName || 'Admin',
+        createBy: user.userName || 'Business',
       }));
     }
   }, [user]);
@@ -63,7 +63,7 @@ const LocationForm = () => {
           })) || []);
         } catch (error) {
           toast.error('Lỗi khi tải dữ liệu địa điểm: ' + error.message);
-          navigate('/admin/locations');
+          navigate('/business/locations');
         }
       };
       fetchLocation();
@@ -71,10 +71,10 @@ const LocationForm = () => {
   }, [id, isEditMode, navigate]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setLocation(prev => ({
       ...prev,  
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
@@ -138,7 +138,7 @@ const LocationForm = () => {
         location_Address: location.location_Address,
         createBy: location.createBy,
         user_ID: user.userId,
-        status: location.status,
+        status: false,
         category_ID: parseInt(location.category_ID),
       }));
       selectedFiles.forEach((file) => {
@@ -154,7 +154,7 @@ const LocationForm = () => {
           location_Address: location.location_Address,
           createBy: location.createBy,
           user_ID: user.userId,
-          status: location.status,
+          status: false,
           category_ID: parseInt(location.category_ID),
         });
         if (selectedFiles.length > 0) {
@@ -181,7 +181,7 @@ const LocationForm = () => {
         setLocation(prev => ({ ...prev, location_ID: newLocation.location_ID }));
         toast.success('Thêm địa điểm thành công!');
       }
-      navigate('/admin/locations');
+      navigate('/business/locations');
     } catch (error) {
       toast.error('Lỗi: ' + (error.response?.data?.message || error.message));
     } finally {
@@ -261,16 +261,6 @@ const LocationForm = () => {
               placeholder="Mô tả chi tiết về địa điểm"
             />
           </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              name="status"
-              checked={location.status}
-              onChange={handleInputChange}
-              className="mr-2 h-5 w-5"
-            />
-            <label className="text-gray-700 font-medium">Hoạt động</label>
-          </div>
         </div>
 
         <div className="mt-6">
@@ -305,7 +295,7 @@ const LocationForm = () => {
         <div className="mt-6 flex justify-end space-x-2">
           <button
             type="button"
-            onClick={() => navigate('/admin/locations')}
+            onClick={() => navigate('/business/locations')}
             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
             disabled={loading}
           >
@@ -324,4 +314,4 @@ const LocationForm = () => {
   );
 };
 
-export default LocationForm;  
+export default BusinessLocationForm; 

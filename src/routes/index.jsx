@@ -9,9 +9,14 @@ import UserHome from "../pages/UserHome";
 import BusinessHomePage from "../pages/BusinessHome";
 import BlogFeedPage from "../pages/BlogFeedPage";
 import AdminHome from "../components/Admin/AdminHome";
-import BusinessManager from "../components/Admin/BusinessManager";
 import LocationManager from "../components/Admin/LocationManager";
 import LocationForm from "../components/Admin/LocationForm";
+import UserManager from "../components/Admin/UserManager";
+import BusinessHome from "../pages/BusinessHome";
+import BusinessLocationManager from "../components/Business/BusinessLocationManager";
+import BusinessLocationForm from "../components/Business/BusinessLocationForm";
+import CategoryManager from "../components/Admin/CategoryManager";
+import CategoryForm from "../components/Admin/CategoryForm";
 
 const AppRoutes = () => {
   return (
@@ -31,14 +36,20 @@ const AppRoutes = () => {
 
       {/* Business */}
       <Route path="/BusinessHome" element={<BusinessHomePage />} />
+      <Route path="/business/locations" element={<BusinessHome content={<BusinessLocationManager />} />} />
+      <Route path="/business/locations/new" element={<BusinessHome content={<BusinessLocationForm />} />} />
+      <Route path="/business/locations/edit/:id" element={<BusinessHome content={<BusinessLocationForm />} />} />
 
       {/* Admin */}
       <Route path="/admin" element={<AdminHome />} />
       <Route path="/admin/overview" element={<AdminHome />} />
-      <Route path="/admin/businessManager" element={<AdminHome content={<BusinessManager />} />} />
       <Route path="/admin/locations" element={<AdminHome content={<LocationManager />} />} />
       <Route path="/admin/locations/new" element={<AdminHome content={<LocationForm />} />} />
       <Route path="/admin/locations/edit/:id" element={<AdminHome content={<LocationForm />} />} />
+      <Route path="/admin/users" element={<AdminHome content={<UserManager />} />} />
+      <Route path="/admin/categories" element={<AdminHome content={<CategoryManager />} />} />
+      <Route path="/admin/categories/new" element={<AdminHome content={<CategoryForm />} />} />
+      <Route path="/admin/categories/edit/:id" element={<AdminHome content={<CategoryForm />} />} />
 
       {/* Chuyển hướng mặc định nếu không khớp route */}
       <Route path="*" element={<Navigate to="/" replace />} />
