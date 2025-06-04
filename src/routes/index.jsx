@@ -17,8 +17,9 @@ import BusinessLocationManager from "../components/Business/BusinessLocationMana
 import BusinessLocationForm from "../components/Business/BusinessLocationForm";
 import CategoryManager from "../components/Admin/CategoryManager";
 import CategoryForm from "../components/Admin/CategoryForm";
+import PendingLocationManager from "../components/Admin/PendingLocationManager";
 
-const AppRoutes = () => {
+const AppRoutes = () => { 
   return (
     <Routes>
       {/** Không cần đăng Nhập **/}
@@ -46,6 +47,7 @@ const AppRoutes = () => {
       <Route path="/admin/locations" element={<AdminHome content={<LocationManager />} />} />
       <Route path="/admin/locations/new" element={<AdminHome content={<LocationForm />} />} />
       <Route path="/admin/locations/edit/:id" element={<AdminHome content={<LocationForm />} />} />
+      <Route path="/admin/pending-locations" element={<AdminHome content={<PendingLocationManager />} />} />
       <Route path="/admin/users" element={<AdminHome content={<UserManager />} />} />
       <Route path="/admin/categories" element={<AdminHome content={<CategoryManager />} />} />
       <Route path="/admin/categories/new" element={<AdminHome content={<CategoryForm />} />} />

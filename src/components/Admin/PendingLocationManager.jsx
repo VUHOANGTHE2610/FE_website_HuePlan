@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getAllLocations, deleteLocation } from '../../services/locationService';
+import { getAllLocationsFalse, updateLocationStatus } from '../../services/locationService';
 import { getAllCategories } from '../../services/categoryService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const LocationManager = () => {
+const PendingLocationManager = () => {
   const [locations, setLocations] = useState([]);
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
-  const navigate = useNavigate();
 
   // Lấy danh sách loại địa điểm
   useEffect(() => {
@@ -24,30 +22,28 @@ const LocationManager = () => {
     fetchCategories();
   }, []);
 
-  // Lấy danh sách địa điểm
+  // Lấy danh sách địa điểm chờ duyệt
   useEffect(() => {
     fetchLocations();
   }, []);
 
   const fetchLocations = async () => {
     try {
-      const data = await getAllLocations();
+      const data = await getAllLocationsFalse();
       setLocations(data);
     } catch (error) {
       toast.error(error.message || 'Có lỗi xảy ra khi tải dữ liệu!');
     }
   };
 
-  // Xử lý xóa địa điểm
-  const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc muốn xóa địa điểm này?')) {
-      try {
-        await deleteLocation(id);
-        toast.success('Xóa địa điểm thành công!');
-        fetchLocations();
-      } catch (error) {
-        toast.error(error.message || 'Có lỗi xảy ra khi xóa địa điểm!');
-      }
+  // Xử lý duyệt địa điểm
+  const handleApprove = async (id) => {
+    try {
+      await updateLocationStatus(id, true);
+      toast.success('Duyệt địa điểm thành công!');
+      fetchLocations(); // Refresh danh sách
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra khi duyệt địa điểm!');
     }
   };
 
@@ -66,9 +62,9 @@ const LocationManager = () => {
   return (
     <div className="p-4">
       <ToastContainer />
-      <h2 className="text-2xl font-bold text-purple-700 mb-4">Quản lý địa điểm</h2>
+      <h2 className="text-2xl font-bold text-purple-700 mb-4">Quản lý địa điểm chờ duyệt</h2>
 
-      <div className="flex justify-between mb-4">
+      <div className="mb-4">
         <input
           type="text"
           placeholder="🔍 Tìm theo tên địa điểm..."
@@ -76,12 +72,6 @@ const LocationManager = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="px-4 py-2 border rounded w-full max-w-md"
         />
-         <button
-          onClick={() => navigate('/admin/locations/new')}
-          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-        >
-          + Thêm địa điểm
-        </button>
       </div>
 
       <div className="overflow-x-auto">
@@ -93,7 +83,7 @@ const LocationManager = () => {
               <th className="p-2 border">Mô tả</th>
               <th className="p-2 border">Địa chỉ</th>
               <th className="p-2 border">Chi phí</th>
-              <th className="p-2 border">Trạng thái</th>
+              <th className="p-2 border">Người tạo</th>
               <th className="p-2 border">Hành động</th>
             </tr>
           </thead>
@@ -105,13 +95,13 @@ const LocationManager = () => {
                 <td className="p-2 border max-w-xs truncate">{loc.location_Description}</td>
                 <td className="p-2 border">{loc.location_Address}</td>
                 <td className="p-2 border">{loc.location_Cost.toLocaleString()}đ</td>
-                <td className="p-2 border">{loc.status ? 'Đã duyệt' : 'Chờ duyệt'}</td>
+                <td className="p-2 border">{loc.createBy}</td>
                 <td className="p-2 border text-center">
                   <button
-                    onClick={() => handleDelete(loc.location_ID)}
-                    className="text-red-600 hover:text-red-800 font-medium"
+                    onClick={() => handleApprove(loc.location_ID)}
+                    className="text-green-600 hover:text-green-800 font-medium"
                   >
-                    🗑 Xóa
+                    ✓ Duyệt
                   </button>
                 </td>
               </tr>
@@ -123,4 +113,4 @@ const LocationManager = () => {
   );
 };
 
-export default LocationManager;
+export default PendingLocationManager; 

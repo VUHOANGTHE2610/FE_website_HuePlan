@@ -1,5 +1,7 @@
 import api from "./api";
 
+const API_URL = "http://localhost:8080/api";
+
 export const getAllLocations = async () => {
   try {
     const response = await api.get("/api/location/getAll");
@@ -140,5 +142,41 @@ export const getLocationsByUserId = async (userId) => {
       } : "Không có response từ server",
     });
     throw error;
+  }
+};
+
+export const getAllLocationsFalse = async () => {
+  try {
+    const response = await api.get("/api/location/getAllFalse");
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể lấy danh sách địa điểm chờ duyệt");
+  } catch (error) {
+    console.error("Lỗi khi gọi API getAllLocationsFalse:", {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+      } : "Không có response từ server",
+    });
+    throw new Error(error.response?.data?.message || "Lỗi khi lấy danh sách địa điểm chờ duyệt");
+  }
+};
+
+export const updateLocationStatus = async (id, isStatus) => {
+  try {
+    const response = await api.put(`/api/location/${id}/status/${isStatus}`);
+    if (response.data.success) return response.data.data;
+    throw new Error(response.data.message || "Cập nhật trạng thái địa điểm thất bại");
+  } catch (error) {
+    console.error("Lỗi khi gọi API updateLocationStatus:", {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+      } : "Không có response từ server",
+    });
+    throw new Error(error.response?.data?.message || "Lỗi khi cập nhật trạng thái địa điểm");
   }
 };
