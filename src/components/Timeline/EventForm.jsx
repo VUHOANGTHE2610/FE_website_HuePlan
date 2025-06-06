@@ -8,6 +8,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
   const [endTime, setEndTime] = useState('');
   const [place, setPlace] = useState('');
   const [address, setAddress] = useState('');
+  const [cost, setCost] = useState(0);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,6 +22,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
       setEndTime(initialData.end || '');
       setPlace(initialData.place || '');
       setAddress(initialData.address || '');
+      setCost(initialData.cost || 0);
       setNote(initialData.note || '');
     }
   }, [initialData]);
@@ -58,7 +60,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
         start_time: startTime + ':00',
         end_time: endTime + ':00',
         location: address || place || '',
-        cost: 0,
+        cost: cost || 0,
         note: note || '',
       };
 
@@ -70,6 +72,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
         end: savedItem.end_time ? savedItem.end_time.slice(0, 5) : '00:00',
         place: savedItem.location,
         address: savedItem.location,
+        cost: savedItem.cost,
         note: savedItem.note,
         day_ID: currentDayId,
       };
@@ -82,6 +85,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
       setEndTime('');
       setPlace('');
       setAddress('');
+      setCost(0);
       setNote('');
       setFormData({
         title: '',
@@ -89,6 +93,7 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
         end: '',
         place: '',
         address: '',
+        cost: 0,
         note: '',
       });
     } catch (err) {
@@ -172,6 +177,21 @@ const EventForm = ({ initialData, setFormData, dayId, onSave }) => {
             updateFormData('address', e.target.value);
           }}
           disabled={loading}
+        />
+      </div>
+      <div className="mb-2">
+        <label className="block text-xs font-medium mb-1">Chi phí (VNĐ)</label>
+        <input
+          type="number"
+          className="w-full border rounded px-2 py-1 text-sm"
+          value={cost}
+          onChange={(e) => {
+            const value = parseFloat(e.target.value) || 0;
+            setCost(value);
+            updateFormData('cost', value);
+          }}
+          disabled={loading}
+          min="0"
         />
       </div>
       <div className="mb-2">

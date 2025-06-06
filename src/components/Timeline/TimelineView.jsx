@@ -26,11 +26,13 @@ const TimelineView = ({ events, setEvents, dayId, onUpdateDayId }) => {
     }));
   };
 
-  const handleSetPlace = (place, address) => {
+  const handleSetPlace = (place, address, cost) => {
+    console.log('Đặt địa điểm:', { place, address, cost }); // Debug
     setFormData((prev) => ({
       ...prev,
       place,
       address,
+      cost: cost || 0,
       title: prev.title || place,
     }));
   };
@@ -53,10 +55,12 @@ const TimelineView = ({ events, setEvents, dayId, onUpdateDayId }) => {
             end: item.end_time ? item.end_time.slice(0, 5) : '00:00',
             place: item.location,
             address: item.location,
+            cost: item.cost,
             note: item.note,
             day_ID: item.day_ID,
           }))
         : [];
+      console.log('Sự kiện đã ánh xạ:', mappedEvents); // Debug
       setEvents(mappedEvents);
     } catch (err) {
       console.error('Lỗi khi làm mới sự kiện:', err);

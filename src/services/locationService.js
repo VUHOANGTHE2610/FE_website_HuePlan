@@ -145,6 +145,25 @@ export const getLocationsByUserId = async (userId) => {
   }
 };
 
+export const getAllLocationsByID = async (categoryId) => {
+  try {
+    const response = await api.get(`/api/location/getAllByID/${categoryId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || `Không thể lấy địa điểm cho loại ${categoryId}`);
+  } catch (error) {
+    console.error(`Lỗi khi gọi API getAllLocationsByID cho loại ${categoryId}:`, {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+      } : "Không có response từ server",
+    });
+    throw new Error(error.response?.data?.message || `Lỗi khi lấy địa điểm cho loại ${categoryId}`);
+  }
+};
+
 export const getAllLocationsFalse = async () => {
   try {
     const response = await api.get("/api/location/getAllFalse");
@@ -178,5 +197,24 @@ export const updateLocationStatus = async (id, isStatus) => {
       } : "Không có response từ server",
     });
     throw new Error(error.response?.data?.message || "Lỗi khi cập nhật trạng thái địa điểm");
+  }
+};
+
+export const getAllLocationsTrue = async () => {
+  try {
+    const response = await api.get("/api/location/getAllTrue");
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Không thể lấy danh sách địa điểm đã duyệt");
+  } catch (error) {
+    console.error("Lỗi khi gọi API getAllLocationsTrue:", {
+      message: error.message,
+      response: error.response ? {
+        status: error.response.status,
+        data: error.response.data,
+      } : "Không có response từ server",
+    });
+    throw new Error(error.response?.data?.message || "Lỗi khi lấy danh sách địa điểm đã duyệt");
   }
 };

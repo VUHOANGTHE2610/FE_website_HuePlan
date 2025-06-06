@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Bookmark, MapPin, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark, MapPin, X, User } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -30,10 +30,10 @@ const LocationCard = ({ location }) => {
   const desc = location.location_Description || "";
   const maxLength = 88;
   const isLongDesc = desc.length > maxLength;
-  const shortDesc = desc.slice(0, maxLength) + (isLongDesc ? "..." : "");
+  const shortDesc = isLongDesc ? desc.slice(0, maxLength) + "..." : desc;
 
   return ( 
-  <div className="w-full max-w-5xl mx-auto my-8 bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row relative">
+  <div className="w-full max-w-5xl mx-auto my-4 bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row relative">
 
       {/* Icon lưu */}
       <button className="absolute top-4 right-4 z-10 bg-white/80 rounded-full p-2 hover:bg-purple-100 transition">
@@ -41,8 +41,8 @@ const LocationCard = ({ location }) => {
       </button>
 
       {/* Ảnh địa điểm */}
-      <div className="md:w-[40%] w-full flex-shrink-0">
-        <div className="relative w-full h-64 md:h-80 overflow-hidden cursor-pointer group">
+      <div className="md:w-1/3 w-full flex-shrink-0">
+        <div className="relative w-full h-48 md:h-64 overflow-hidden cursor-pointer group">
           {photos.length > 0 ? (
             <>
               <img
@@ -54,16 +54,16 @@ const LocationCard = ({ location }) => {
               {photos.length > 1 && (
                 <>
                   <button
-                    onClick={prevPhoto}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition z-10"
+                    onClick={(e) => { e.stopPropagation(); prevPhoto(); }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition z-10"
                   >
-                    <ChevronLeft size={24} />
+                    <ChevronLeft size={20} />
                   </button>
                   <button
-                    onClick={nextPhoto}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition z-10"
+                     onClick={(e) => { e.stopPropagation(); nextPhoto(); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition z-10"
                   >
-                    <ChevronRight size={24} />
+                    <ChevronRight size={20} />
                   </button>
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1 z-10">
                     {photos.map((_, index) => (
@@ -72,7 +72,7 @@ const LocationCard = ({ location }) => {
                         className={`w-2 h-2 rounded-full ${
                           index === currentPhotoIndex ? 'bg-white' : 'bg-white/50'
                         }`}
-                        onClick={() => setCurrentPhotoIndex(index)}
+                        onClick={(e) => { e.stopPropagation(); setCurrentPhotoIndex(index); }}
                       />
                     ))}
                   </div>
@@ -88,16 +88,16 @@ const LocationCard = ({ location }) => {
       </div>
 
       {/* Nội dung địa điểm */}
-      <div className="md:w-[60%] w-full flex flex-col justify-between p-4">
+      <div className="md:w-2/3 w-full flex flex-col justify-between p-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
             {location.location_Name}
           </h2>
-          <p className="text-gray-700 mb-4 leading-relaxed">
-            {showFullDesc || !isLongDesc ? desc : shortDesc}
+          <p className="text-gray-700 mb-2 leading-relaxed text-sm">
+            {showFullDesc ? desc : shortDesc}
             {isLongDesc && (
               <button
-                className="ml-2 text-blue-600 font-semibold hover:underline focus:outline-none"
+                className="ml-1 text-blue-600 font-semibold hover:underline focus:outline-none text-sm"
                 onClick={() => setShowFullDesc((v) => !v)}
               >
                 {showFullDesc ? 'Ẩn bớt' : 'Xem thêm'}
@@ -106,8 +106,12 @@ const LocationCard = ({ location }) => {
           </p>
         </div>
         <div className="flex flex-col gap-2 mt-2">
-          <div className="flex items-center gap-2 font-semibold text-blue-700">
-            <MapPin size={18} />
+           <div className="flex items-center gap-2 text-gray-600 text-sm">
+            <User size={16} />
+            <span>Người tạo: {location.createBy || 'Không rõ'}</span>
+          </div>
+          <div className="flex items-center gap-2 font-semibold text-blue-700 text-sm">
+            <MapPin size={16} />
             <span>{location.location_Address}</span>
           </div>
           <span className="font-semibold text-purple-600 text-right text-lg">

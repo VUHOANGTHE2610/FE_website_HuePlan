@@ -7,6 +7,7 @@ const EventDetailModal = ({ show, event, onClose, onUpdate }) => {
   const [endTime, setEndTime] = useState('');
   const [place, setPlace] = useState('');
   const [address, setAddress] = useState('');
+  const [cost, setCost] = useState(0);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,6 +20,7 @@ const EventDetailModal = ({ show, event, onClose, onUpdate }) => {
       setEndTime(event.end || '');
       setPlace(event.place || '');
       setAddress(event.address || '');
+      setCost(event.cost || 0);
       setNote(event.note || '');
     }
   }, [event]);
@@ -48,7 +50,7 @@ const EventDetailModal = ({ show, event, onClose, onUpdate }) => {
         start_time: startTime + ':00',
         end_time: endTime + ':00',
         location: address || '',
-        cost: 0,
+        cost: cost || 0,
         note: note || '',
       };
 
@@ -60,6 +62,7 @@ const EventDetailModal = ({ show, event, onClose, onUpdate }) => {
         end: savedItem.end_time ? savedItem.end_time.slice(0, 5) : endTime,
         place: savedItem.title,
         address: savedItem.location,
+        cost: savedItem.cost,
         note: savedItem.note,
         day_ID: savedItem.day_ID,
       });
@@ -127,6 +130,17 @@ const EventDetailModal = ({ show, event, onClose, onUpdate }) => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               disabled={loading}
+            />
+          </div>
+          <div className="mb-2">
+             <label className="block text-xs font-medium mb-1">Chi phí (VNĐ)</label>
+             <input
+              type="number"
+              className="w-full border rounded px-2 py-1 text-sm"
+              value={cost}
+              onChange={(e) => setCost(parseFloat(e.target.value) || 0)}
+              disabled={loading}
+              min="0"
             />
           </div>
           <div className="mb-2">

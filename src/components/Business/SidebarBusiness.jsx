@@ -1,9 +1,17 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, MapPin, LogOut } from 'lucide-react';
+import { AuthContext } from '../../context/AuthContext';
 
 const SidebarBusiness = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/homedefault');
+  };
 
   const menuItems = [
     {
@@ -37,9 +45,7 @@ const SidebarBusiness = () => {
           </Link>
         ))}
         <button
-          onClick={() => {
-            window.location.href = "/homedefault";
-          }}
+          onClick={handleLogout}
           className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
         >
           <span className="mr-3"><LogOut size={20} /></span>
